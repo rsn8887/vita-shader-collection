@@ -18,8 +18,8 @@
 
 struct precalc_coord
 {
-   float4 texel : TEXCOORD2;
-   float4 prescale : TEXCOORD3;
+   float2 texel : TEXCOORD1;
+   float2 prescale : TEXCOORD2;
 };
 
 struct input
@@ -29,21 +29,24 @@ struct input
    float2 output_size;
 };
 
-float4 main(in precalc_coord co2, uniform sampler2D s0 : TEXUNIT0, uniform input IN2) : COLOR
+float4 main (
+   in precalc_coord co2,
+   uniform input IN2,
+   uniform sampler2D s0 : TEXUNIT0
+   ) : COLOR
 {
    //co2.texel has already been multiplied by texture_size inside vertex shader
-   float2 texel_floored = (floor(co2.texel)).xy;
-   float2 s = (frac(co2.texel)).xy;
+   float2 texel_floored = floor(co2.texel);
+   float2 s = frac(co2.texel);
    //prescale is the largest possible integer scale, calculated in vertex shader
-   float2 region_range = 0.5 - 0.5 / (co2.prescale).xy;
+   float2 region_range = 0.5 - 0.5 / co2.prescale;
 
    // Figure out where in the texel to sample to get correct pre-scaled bilinear.
    // Uses the hardware bilinear interpolator to avoid having to sample 4 times manually.
  
    float2 center_dist = s - 0.5;
-   float2 f = (center_dist - clamp(center_dist, -region_range, region_range)) * (co2.prescale).xy + 0.5;
+   float2 f = (center_dist - clamp(center_dist, -region_range, region_range)) * co2.prescale + 0.5;
    float2 mod_texel = texel_floored + f;
    
    return float4(tex2D(s0, mod_texel / IN2.texture_size).rgb, 1.0);
-   
 }

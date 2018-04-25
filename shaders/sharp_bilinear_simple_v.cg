@@ -18,8 +18,8 @@
 
 struct precalc_coord
 {
-   float4 texel : TEXCOORD2;
-   float4 prescale : TEXCOORD3;
+   float2 texel : TEXCOORD1;
+   float2 prescale : TEXCOORD2;
 };
 
 struct input
@@ -29,22 +29,20 @@ struct input
    float2 output_size;
 };
 
-void main
-(
+void main (
    float4 aPosition,
-   out float4 oPosition : POSITION,
-   column_major uniform float4x4 wvp,
    float2 aTexcoord,
-   out float2 oTex : TEXCOORD,
-
+   column_major uniform float4x4 wvp,
    uniform input IN,
+   out float4 vPosition : POSITION,
+   out float2 vTexcoord : TEXCOORD0,
    out precalc_coord co
-)
+   )
 {
-   oPosition = mul(aPosition, wvp);
-   oTex = aTexcoord;
+   vPosition = mul(aPosition, wvp);
+   vTexcoord = aTexcoord;
    
    //precalculate some values to pass to the fragment shader
-   co.texel = float4(aTexcoord * IN.texture_size, 0.0, 0.0);
-   co.prescale = float4(floor(IN.output_size / IN.texture_size), 0.0, 0.0);
+   co.texel = aTexcoord * IN.texture_size;
+   co.prescale = floor(IN.output_size / IN.texture_size);
 }
