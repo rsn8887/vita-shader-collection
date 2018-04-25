@@ -11,16 +11,7 @@
    with a bilinear hardware filtering (GL_BILINEAR filter or some such) to achieve
    a smooth scaling result with minimum blur. This is good for pixelgraphics
    that are scaled by non-integer factors.
-   
-   The prescale factor and texel coordinates are precalculated
-   in the vertex shader for speed.
 */
-
-struct precalc_coord
-{
-   float2 texel : TEXCOORD1;
-   float2 prescale : TEXCOORD2;
-};
 
 struct input
 {
@@ -36,13 +27,8 @@ void main (
    uniform input IN,
    out float4 vPosition : POSITION,
    out float2 vTexcoord : TEXCOORD0,
-   out precalc_coord co
    )
 {
    vPosition = mul(aPosition, wvp);
    vTexcoord = aTexcoord;
-   
-   //precalculate some values to pass to the fragment shader
-   co.texel = aTexcoord * IN.texture_size;
-   co.prescale = floor(IN.output_size / IN.texture_size);
 }
