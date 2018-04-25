@@ -31,10 +31,10 @@ struct input
 
 void main
 (
-   float4 aPosition : POSITION,
+   float4 aPosition,
    out float4 oPosition : POSITION,
    column_major uniform float4x4 wvp,
-   float2 aTexcoord : TEXCOORD,
+   float2 aTexcoord,
    out float2 oTex : TEXCOORD,
 
    uniform input IN,
